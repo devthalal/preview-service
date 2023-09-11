@@ -3,6 +3,7 @@ package pull_code
 import (
 	common "ab-preview-service/common"
 	"archive/zip"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -26,9 +27,10 @@ func PullCode(previewName, s3PreSignedURL string) common.FunctionReturn {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("\n resp %v\n", resp)
 		return common.FunctionReturn{
-			Message: "Error pulling s3 api, not success",
-			Err:     err,
+			Message: "Error pulling,s3 api not success status",
+			Err:     errors.New("pulling s3 api, not success"),
 			Status:  resp.StatusCode,
 		}
 	}

@@ -8,7 +8,7 @@ func StartPackage(previewName string, unusedPorts []int) common.FunctionReturn {
 	var err error
 
 	// Remove once appblock docker is released
-	err = common.RunCmd(previewName, "sudo", "docker", "build", ".", "-t", "appblocks_1.0.0_nodejs")
+	err = common.RunCmd(previewName, "docker", "build", ".", "-t", "appblocks_1.0.0_nodejs")
 
 	if err != nil {
 		return common.FunctionReturn{
@@ -18,7 +18,7 @@ func StartPackage(previewName string, unusedPorts []int) common.FunctionReturn {
 	}
 
 	// run docker compose
-	err = common.RunCmd(previewName, "sudo", "docker", "compose", "up", "-d")
+	err = common.RunCmd(previewName, "docker", "compose", "up", "-d")
 
 	if err != nil {
 		return common.FunctionReturn{

@@ -8,8 +8,9 @@ type FunctionReturn struct {
 }
 
 type PackageServices struct {
-	Name   string   `json:"Name"`
-	Domain string   `json:"Domain"`
-	Port   int      `json:"Port"`
-	Tags   []string `json:"Tags"`
+	Name          string   `json:"Name,omitempty"`
+	Domain        string   `json:"Domain,omitempty"`
+	Port          int      `json:"Port,omitempty"`
+	ServerContent string   `json:"ServerContent,omitempty"`
+	Tags          []string `json:"Tags,omitempty"`
 }
