@@ -2,9 +2,13 @@ package start_package
 
 import (
 	common "ab-preview-service/common"
+	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func copyDir(src, dst string) common.FunctionReturn {
@@ -128,6 +132,60 @@ func setupEnv(sourcePath, destinationPath string) common.FunctionReturn {
 
 	return common.FunctionReturn{
 		Message: "Setup env successfully",
+	}
+}
+
+func copyBuildOnFinish(previewName string) common.FunctionReturn {
+	success := false
+	maxIterations := 20 //  try for 10 mns
+	iteration := 0
+
+	for !success {
+		cmd := exec.Command("docker", "compose", "logs")
+		cmd.Dir = previewName
+
+		// Capture the command's standard output and error
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return common.FunctionReturn{
+				Err:     err,
+				Message: "Error executing compose logs command",
+			}
+		}
+
+		if strings.Contains(string(output), "container build success") || iteration >= maxIterations {
+			success = true
+
+			var err error
+
+			containerSrcDir := "/home/ubuntu/" + previewName + "/._bb_/container_build"
+			containerDstDir := "/usr/share/container_build"
+
+			if res := copyDir(containerSrcDir, containerDstDir); err != nil {
+				return res
+			}
+
+			elementsSrcDir := "/home/ubuntu/" + previewName + "/._bb_/elements_emulator/dist"
+			elementsDstDir := "/usr/share/elements_build"
+
+			if res := copyDir(elementsSrcDir, elementsDstDir); err != nil {
+				return res
+			}
+
+		} else {
+			fmt.Printf("\nwaiting for bb process to complete %v\n", iteration)
+			fmt.Printf(string(output))
+
+			// Sleep for 30 seconds before running the command again
+			time.Sleep(30 * time.Second)
+
+			// Increment the iteration counter
+			iteration++
+		}
+	}
+
+	return common.FunctionReturn{
+		Message: "Copy success",
 	}
 }
 

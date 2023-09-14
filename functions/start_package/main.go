@@ -32,17 +32,8 @@ func StartPackage(previewName string) common.FunctionReturn {
 		}
 	}
 
-	containerSrcDir := "/home/ubuntu/" + previewName + "/._bb_/container_build"
-	containerDstDir := "/usr/share/container_build"
-
-	if res := copyDir(containerSrcDir, containerDstDir); err != nil {
-		return res
-	}
-
-	elementsSrcDir := "/home/ubuntu/" + previewName + "/._bb_/elements_emulator/dist"
-	elementsDstDir := "/usr/share/elements_build"
-
-	if res := copyDir(elementsSrcDir, elementsDstDir); err != nil {
+	res = copyBuildOnFinish(previewName)
+	if res.Err != nil {
 		return res
 	}
 
