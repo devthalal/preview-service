@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func AddCaddyRoutes(services []common.PackageServices) common.FunctionReturn {
@@ -77,6 +78,47 @@ func getCaddyRouteData(services []common.PackageServices) []map[string]interface
 	routesDatas := make([]map[string]interface{}, 0)
 
 	for _, route := range services {
+
+		buildPath := ""
+
+		if strings.Contains(route.Domain, "elements") {
+			buildPath = "/usr/share/elements_build"
+		} else {
+			buildPath = "/usr/share/container_build"
+		}
+
+		routeHandle := []map[string]interface{}{
+			{
+				"handler": "vars",
+				"root":    buildPath,
+			},
+			{
+				"handler":     "file_server",
+				"index_names": []string{"index.html"},
+			},
+		}
+
+		if strings.Contains(route.Domain, "function") {
+			routeHandle = []map[string]interface{}{
+				{
+					"handler": "headers",
+					"response": map[string]interface{}{
+						"set": map[string]interface{}{
+							"Cache-Control": []string{"no-cache"},
+						},
+					},
+				},
+				{
+					"handler": "reverse_proxy",
+					"upstreams": []map[string]interface{}{
+						{
+							"dial": "0.0.0.0:" + strconv.Itoa(route.Port),
+						},
+					},
+				},
+			}
+		}
+
 		routeData := map[string]interface{}{
 			"match": []map[string]interface{}{
 				{
@@ -88,24 +130,7 @@ func getCaddyRouteData(services []common.PackageServices) []map[string]interface
 					"handler": "subroute",
 					"routes": []map[string]interface{}{
 						{
-							"handle": []map[string]interface{}{
-								{
-									"handler": "headers",
-									"response": map[string]interface{}{
-										"set": map[string]interface{}{
-											"Cache-Control": []string{"no-cache"},
-										},
-									},
-								},
-								{
-									"handler": "reverse_proxy",
-									"upstreams": []map[string]interface{}{
-										{
-											"dial": "0.0.0.0:" + strconv.Itoa(route.Port),
-										},
-									},
-								},
-							},
+							"handle": routeHandle,
 						},
 					},
 				},

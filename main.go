@@ -70,10 +70,10 @@ func main() {
 		log.Fatal(res.Err)
 		return
 	}
-	fmt.Printf(" \n start_package %v \n", res.Data)
+	fmt.Printf(" \n GetUnusedPort %v \n", res.Data)
 
 	log.Printf("-----------starting package ---------------------")
-	res = start_package.StartPackage(previewName, res.Data.([]int))
+	res = start_package.StartPackage(previewName)
 	log.Printf(res.Message)
 	if res.Err != nil {
 		log.Fatal(res.Err)
@@ -135,5 +135,3 @@ func main() {
 	log.Printf("#############################################################")
 
 }
-
-// scp -o StrictHostKeyChecking=no -i /home/ntpl/NEOITO_PROJECTS/APPBLOCKS/admin-api/_ab_previewKey.pem /home/ntpl/NEOITO_PROJECTS/APPBLOCKS/ab-preview-service/ab-preview-service ubuntu@ec2-34-229-111-40.compute-1.amazonaws.com:/home/ubuntu
