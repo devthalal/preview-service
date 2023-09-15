@@ -89,6 +89,14 @@ func getCaddyRouteData(services []common.PackageServices) []map[string]interface
 
 		routeHandle := []map[string]interface{}{
 			{
+				"handler": "headers",
+				"response": map[string]interface{}{
+					"set": map[string]interface{}{
+						"Access-Control-Allow-Origin": []string{"*"},
+					},
+				},
+			},
+			{
 				"handler": "vars",
 				"root":    buildPath,
 			},
