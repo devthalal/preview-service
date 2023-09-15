@@ -153,7 +153,7 @@ func copyBuildOnFinish(previewName string) common.FunctionReturn {
 			}
 		}
 
-		if strings.Contains(string(output), "container build success") || iteration >= maxIterations {
+		if strings.Contains(string(output), "Start process completed") || iteration >= maxIterations {
 			success = true
 
 			var err error
